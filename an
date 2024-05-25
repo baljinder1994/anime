@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plane and Fan Animation with Graph</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        #fan {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #plane {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            bottom: 0;
+            left: 0;
+        }
+        #message {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 40%;
+            font-size: 24px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="trailCanvas"></canvas>
+        <div id="message">2.00x</div>
+        <img id="fan" src="fan.png" alt="Fan">
+        <img id="plane" src="plane.png" alt="Plane">
+    </div>
+    <script>
+	  document.addEventListener('DOMContentLoaded', () => {
+    const fan = document.getElementById('fan');
+    const plane = document.getElementById('plane');
+    const canvas = document.getElementById('trailCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let angle = 0;
+    let planeX = 0;
+    let planeY = canvas.height;
+    let direction = 1; // 1 for moving up, -1 for moving down
+    const canvasWidth = window.innerWidth;
+    const canvasHeight = window.innerHeight;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    function rotateFan() {
+        angle += 5;
+        fan.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        requestAnimationFrame(rotateFan);
+    }
+
+    function movePlane() {
+        planeX += 2; // Adjust speed
+        if (planeY <= 0 || planeY >= canvasHeight) {
+            direction *= -1; // Change direction when hitting top or bottom
+        }
+        planeY += direction * 5; // Adjust vertical speed and direction
+
+        plane.style.left = planeX + 'px';
+        plane.style.bottom = (canvasHeight - planeY - 50) + 'px';
+
+        drawTrail(planeX, planeY);
+
+        if (planeX > canvasWidth) {
+            planeX = 0;
+        }
+
+        requestAnimationFrame(movePlane);
+    }
+
+    function drawTrail(x, y) {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Clear the canvas
+
+        ctx.beginPath();
+        ctx.moveTo(0, canvasHeight);
+        ctx.lineTo(x, y);
+        ctx.lineTo(x, canvasHeight);
+        ctx.closePath();
+
+        ctx.fillStyle = 'red';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, canvasHeight);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
+    rotateFan();
+    movePlane();
+});
+
+	</script>
+</body>
+</html>
